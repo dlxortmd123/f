@@ -43,10 +43,10 @@ public:
 	}
 
 	//Interface
-	void Open_Menu();
-	void Click_Insertion();
-	void Click_Search();
-	void Select_Sortion_Option();
+	void Menu();
+	void Insert();
+	void Search();
+	void Sort();
 
 	//FileManager
 	void writeFile(Student _newStudent);
@@ -136,10 +136,12 @@ Info_sys::Info_sys(fstream& file1, fstream& file2) {
 			input_dnum = buffer.substr(0, 3);
 			input_dname = buffer.substr(4);
 		}
+		Department_Name.push_back(input_dname);
+		Department_Num.push_back(input_dnum);
 	}
 }
 
-void Info_sys::Open_Menu() {
+void Info_sys::Menu() {
 	int m_input = 0; // 사용자가 입력한 숫자
 
 
@@ -157,13 +159,13 @@ void Info_sys::Open_Menu() {
 	switch (m_input)
 	{
 	case 1:
-		Click_Insertion();
+		Insert();
 		break;
 	case 2:
-		Click_Search();
+		Search();
 		break;
 	case 3:
-		Select_Sortion_Option();
+		Sort();
 		break;
 	case 4:
 		exit(0);
@@ -172,7 +174,7 @@ void Info_sys::Open_Menu() {
 	}
 }
 
-void Info_sys::Click_Insertion() {
+void Info_sys::Insert() {
 	string Input_Name;
 	string Input_ID;
 	string Input_Email;
@@ -209,11 +211,11 @@ void Info_sys::Click_Insertion() {
 
 	Info_sys::writeFile(newStudent);
 
-	Open_Menu();
+	Menu();
 
 }
 
-void Info_sys::Click_Search() {
+void Info_sys::Search() {
 	string s_name; // user name
 	string s_id;
 	string s_year; // admission year
@@ -305,11 +307,11 @@ void Info_sys::Click_Search() {
 		break;
 	}
 
-	Open_Menu();
+	Menu();
 
 }
 
-void Info_sys::Select_Sortion_Option() {
+void Info_sys::Sort() {
 	int sort_input = 0;
 
 	cout << "- Sorting Option" << endl;
@@ -334,7 +336,7 @@ void Info_sys::Select_Sortion_Option() {
 		break;
 	}
 
-	Open_Menu();
+	Menu();
 } 
 
 void Info_sys::writeFile(Student _newStudent) {
@@ -367,7 +369,7 @@ int main()
 	
 	Info_sys mysystem(infile1, infile2);
 
-	mysystem.Open_Menu();
+	mysystem.Menu();
 	
 	return 0;
 }
