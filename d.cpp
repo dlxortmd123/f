@@ -14,10 +14,10 @@ class Info_sys {
 private:
 	struct Student {
 		string Name;
-		string Email_address;
-		string Student_Department;
-		string Tel;
 		string Student_ID;
+		string Email_address;
+		string dName;
+		string Tel;
 
 	};
 
@@ -60,11 +60,28 @@ public:
 		return a.Student_ID < b.Student_ID;
 	}
 	static bool compare_dname(const Student &a, const Student &b) {
-		return a.Student_Department < b.Student_Department;
+		return a.dName < b.dName;
 	}
 };
 
 Info_sys::Info_sys(fstream& file1, fstream& file2) {
+	if (file2.is_open()) {
+		string buffer;
+
+		string input_dname; //department name
+		string input_dnum; //department number
+
+		while (file2.peek() != EOF) {
+			getline(file2, buffer);
+
+			input_dnum = buffer.substr(0, 3);
+			input_dname = buffer.substr(4);
+
+			Department_Name.push_back(input_dname);
+			Department_Num.push_back(input_dnum);
+		}
+
+	}
 	if (file1.is_open()) {
 		string buffer;
 		
@@ -98,7 +115,12 @@ Info_sys::Info_sys(fstream& file1, fstream& file2) {
 				else if (title == "Student ID") {
 					input_id = content;
 					_student.Student_ID = input_id;
-					_student.Student_Department = _student.Student_ID.substr(4, 3);
+
+					for (int i = 0; i < Department_Name.size(); ++i) {
+						if (input_id.substr(4, 3) == Department_Num[i]) {
+							_student.dName = Department_Name[i];
+						}
+					}
 				}
 				else if (title == "Email address") {
 					input_email = content;
@@ -124,21 +146,7 @@ Info_sys::Info_sys(fstream& file1, fstream& file2) {
 		file1.open("file1.txt");
 	}
 
-	if (file2.is_open()) {
-		string buffer;
-
-		string input_dname; //department name
-		string input_dnum; //department number
-
-		while (file2.peek() != EOF) {
-			getline(file2, buffer);
-
-			input_dnum = buffer.substr(0, 3);
-			input_dname = buffer.substr(4);
-		}
-		Department_Name.push_back(input_dname);
-		Department_Num.push_back(input_dnum);
-	}
+	
 }
 
 void Info_sys::Menu() {
@@ -201,11 +209,15 @@ void Info_sys::Insert() {
 
 	cout << endl;
 
-	newStudent.Name = Input_Name;
-	newStudent.Student_ID = Input_ID;
-	newStudent.Email_address = Input_Email;
-	newStudent.Tel = Input_Tel;
-	newStudent.Student_Department = newStudent.Student_Department.substr(4, 3);
+	string dnum = Input_ID.substr(4, 3);
+	string dname;
+
+	for (int i = 0; i < Department_Num.size(); ++i) {
+		if (dnum == Department_Num[i])
+			dname = Department_Name[i];
+	}
+
+	newStudent = { Input_Name, Input_ID, Input_Email, dname, Input_Tel};
 
 	StudentVec.push_back(newStudent);
 
@@ -249,7 +261,7 @@ void Info_sys::Search() {
 
 		for (int i = 0; i < StudentVec.size(); ++i) {
 			if (StudentVec[i].Name.compare(s_name) == 0) {
-				cout << StudentVec[i].Name << " " << StudentVec[i].Student_ID << " " << StudentVec[i].Student_Department << " " << StudentVec[i].Email_address << " " << StudentVec[i].Tel << endl;
+				cout << StudentVec[i].Name << " " << StudentVec[i].Student_ID << " " << StudentVec[i].dName << " " << StudentVec[i].Email_address << " " << StudentVec[i].Tel << endl;
 			}
 		}
 
@@ -261,7 +273,7 @@ void Info_sys::Search() {
 		cout << "Name" << "            " << "Student ID" << " " << "Dept" << "                  " << "Email" << "           " << "Tel" << endl;
 		for (int i = 0; i < StudentVec.size(); ++i) {
 			if (StudentVec[i].Student_ID.compare(s_id) == 0) {
-				cout << StudentVec[i].Name << " " << StudentVec[i].Student_ID << " " << StudentVec[i].Student_Department << " " << StudentVec[i].Email_address << " " << StudentVec[i].Tel << endl;
+				cout << StudentVec[i].Name << " " << StudentVec[i].Student_ID << " " << StudentVec[i].dName << " " << StudentVec[i].Email_address << " " << StudentVec[i].Tel << endl;
 			}
 		}
 		break;
@@ -276,22 +288,20 @@ void Info_sys::Search() {
 			student_year = StudentVec[i].Student_ID.substr(0, 4);
 
 			if (student_year.compare(s_year) == 0) {
-				cout << StudentVec[i].Name << " " << StudentVec[i].Student_ID << " " << StudentVec[i].Student_Department << " " << StudentVec[i].Email_address << " " << StudentVec[i].Tel << endl;
+				cout << StudentVec[i].Name << " " << StudentVec[i].Student_ID << " " << StudentVec[i].dName << " " << StudentVec[i].Email_address << " " << StudentVec[i].Tel << endl;
 			}
 		}
 		break;
 	case 4:
 		cout << "Department Name keyword? ";
-		cin >> s_dname;
+		getline(cin, s_dname);
+		getline(cin, s_dname);
 		cout << endl;
 		cout << "Name" << "            " << "Student ID" << " " << "Dept" << "                  " << "Email" << "           " << "Tel" << endl;
 		for (int i = 0; i < StudentVec.size(); ++i) {
 
-			string student_department;
-			student_department = StudentVec[i].Student_ID.substr(4, 3);
-
-			if (student_department.compare(s_name) == 0) {
-				cout << StudentVec[i].Name << " " << StudentVec[i].Student_ID << " " << StudentVec[i].Student_Department << " " << StudentVec[i].Email_address << " " << StudentVec[i].Tel << endl;
+			if (StudentVec[i].dName.compare(s_dname) == 0) {
+				cout << StudentVec[i].Name << " " << StudentVec[i].Student_ID << " " << StudentVec[i].dName << " " << StudentVec[i].Email_address << " " << StudentVec[i].Tel << endl;
 			}
 		}
 		break;
@@ -299,7 +309,7 @@ void Info_sys::Search() {
 		cout << endl;
 		cout << "Name" << "            " << "Student ID" << " " << "Dept" << "                  " << "Email" << "           " << "Tel" << endl;
 		for (int i = 0; i < StudentVec.size(); ++i) {
-			cout << StudentVec[i].Name << " " << StudentVec[i].Student_ID << " " << StudentVec[i].Student_Department << " " << StudentVec[i].Email_address << " " << StudentVec[i].Tel << endl;
+			cout << StudentVec[i].Name << " " << StudentVec[i].Student_ID << " " << StudentVec[i].dName << " " << StudentVec[i].Email_address << " " << StudentVec[i].Tel << endl;
 		}
 		break;
 
@@ -354,7 +364,7 @@ void Info_sys::detect_Department(Student _Student) {
 
 	for (int i = 0; i < Department_Num.size(); ++i) {
 		if (Department_Num[i].compare(department_code) == 0) {
-			_Student.Student_Department = Department_Name[i];
+			_Student.dName = Department_Name[i];
 		}
 	}
 }
